@@ -107,7 +107,7 @@ let enemySpeed = 3;
 let spawnInterval = 700; // Интервал появления врагов 500 мс
 let score = 0;
 let isGameOver = false;
-let autoFireInterval = 100;
+let autoFireInterval = null;
 
 // Интервалы спавна бонусов
 let bonusSpawnIntervals = {
@@ -119,7 +119,7 @@ let bonuses = {
   shield: 0,
   doubleScore: 0,
   tripleScore: 0,
-  autoFire: 30000, // Время работы автострельбы
+  autoFire: 0, // Время работы автострельбы
 };
 
 let player = {
@@ -148,7 +148,7 @@ let enemies = [
 ];
 let bullets = [];
 let stars = [];
-let activeBonuses = ["autoFire"];
+let activeBonuses = [];
 let spawnIntervalId;
 let bonusSpawnIntervalIds = {};
 const MAX_BONUSES_ON_SCREEN = 3; // Максимальное количество бонусов на экране
