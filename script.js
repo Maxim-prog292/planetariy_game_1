@@ -119,7 +119,7 @@ let bonuses = {
   shield: 0,
   doubleScore: 0,
   tripleScore: 0,
-  autoFire: 30, // Время работы автострельбы
+  autoFire: 30000, // Время работы автострельбы
 };
 
 let player = {
