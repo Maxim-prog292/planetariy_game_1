@@ -45,8 +45,8 @@ const ENEMY_WIDTH = 70;
 const ENEMY_HEIGHT = 70;
 const BULLET_WIDTH = 5;
 const BULLET_HEIGHT = 10;
-const BONUS_WIDTH = 45;
-const BONUS_HEIGHT = 35;
+const BONUS_WIDTH = 65;
+const BONUS_HEIGHT = 55;
 
 const planets = [
   {
@@ -119,7 +119,7 @@ let bonuses = {
   shield: 0,
   doubleScore: 0,
   tripleScore: 0,
-  autoFire: 0, // Время работы автострельбы
+  autoFire: 30, // Время работы автострельбы
 };
 
 let player = {
