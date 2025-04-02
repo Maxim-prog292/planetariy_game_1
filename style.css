@@ -1,6 +1,6 @@
 @font-face {
   font-family: Pixel;
-  src: url(fonts/Pixel.ttf) format("truetype");
+  src: url(fonts/TT_Octosquares_Regular.ttf) format("truetype");
 }
 * {
   touch-action: none;
