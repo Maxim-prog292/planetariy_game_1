@@ -1,5 +1,20 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
+const storage = localStorage;
+const bestScore = () => {
+  let best = 0;
+  if (
+    Number(storage.getItem("Ваш счет: ")) >
+    Number(storage.getItem("Лучший счет: "))
+  ) {
+    best = Number(storage.getItem("Ваш счет: "));
+  } else {
+    best = Number(storage.getItem("Лучший счет: "));
+  }
+  return best;
+};
+
+console.log(Number(storage.getItem("Ваш счет: ")));
 
 document.addEventListener(
   "touchstart",
@@ -45,8 +60,8 @@ const ENEMY_WIDTH = 70;
 const ENEMY_HEIGHT = 70;
 const BULLET_WIDTH = 5;
 const BULLET_HEIGHT = 10;
-const BONUS_WIDTH = 45;
-const BONUS_HEIGHT = 35;
+const BONUS_WIDTH = 75;
+const BONUS_HEIGHT = 55;
 
 const planets = [
   {
@@ -54,12 +69,12 @@ const planets = [
     image: "image/planet/neptune.png",
     scoreToAppear: 1000,
   },
-  { name: "Uranus", image: "image/planet/uranus.png", scoreToAppear: 17000 },
-  { name: "Saturn", image: "image/planet/saturn.png", scoreToAppear: 30000 },
-  { name: "Jupiter", image: "image/planet/jupiter.png", scoreToAppear: 45000 },
-  { name: "Mars", image: "image/planet/mars.png", scoreToAppear: 58000 },
-  { name: "Earth", image: "image/planet/earth.png", scoreToAppear: 70000 },
-  { name: "Venus", image: "image/planet/venus.png", scoreToAppear: 90000 },
+  { name: "Uranus", image: "image/planet/uranus.png", scoreToAppear: 7000 },
+  { name: "Saturn", image: "image/planet/saturn.png", scoreToAppear: 12000 },
+  { name: "Jupiter", image: "image/planet/jupiter.png", scoreToAppear: 16000 },
+  { name: "Mars", image: "image/planet/mars.png", scoreToAppear: 19000 },
+  { name: "Earth", image: "image/planet/earth.png", scoreToAppear: 23000 },
+  { name: "Venus", image: "image/planet/venus.png", scoreToAppear: 28000 },
 ];
 
 let currentPlanetIndex = 0; // Индекс текущей планеты
@@ -154,7 +169,7 @@ let bonusSpawnIntervalIds = {};
 const MAX_BONUSES_ON_SCREEN = 3; // Максимальное количество бонусов на экране
 
 // Генерация звезд для фона
-for (let i = 0; i < 200; i++) {
+for (let i = 0; i < 100; i++) {
   stars.push({
     x: Math.random() * canvas.width,
     y: Math.random() * canvas.height,
@@ -220,7 +235,7 @@ function startBonusSpawns() {
 function shootBullet() {
   bullets.push({
     x: player.x + player.width / 2 - BULLET_WIDTH / 2,
-    y: player.y,
+    y: player.y + player.height / 2 - BULLET_HEIGHT / 2,
     width: BULLET_WIDTH,
     height: BULLET_HEIGHT,
   });
@@ -342,7 +357,7 @@ function drawBonuses() {
 function drawActiveBonuses() {
   ctx.fillStyle = "#fff";
   ctx.font = "26px Pixel";
-  let yOffset = 80;
+  let yOffset = 190;
   for (const [key, value] of Object.entries(bonuses)) {
     if (value > 0) {
       switch (key) {
@@ -486,10 +501,16 @@ function drawScore() {
   ctx.fillStyle = "#fff";
   ctx.font = "36px Pixel";
   ctx.fillText(`Счет: ${score}`, 20, 40);
+  ctx.fillText(
+    `Предыдущий счет: ${storage.getItem("Предыдущий счет: ")}`,
+    20,
+    90
+  );
+  ctx.fillText(`Лучший счет: ${storage.getItem("Лучший счет: ")}`, 20, 140);
 }
 
 function increaseDifficulty() {
-  enemySpeed += 0.35; // Увеличиваем скорость врагов
+  enemySpeed = 5; // Увеличиваем скорость врагов
   if (spawnInterval > 300) {
     spawnInterval -= 100; // Уменьшаем интервал появления врагов
     clearInterval(spawnIntervalId);
@@ -504,12 +525,16 @@ function triggerGameOver() {
   stopAutoFire();
   document.getElementById("gameOverScreen").classList.remove("hidden");
   document.getElementById("finalScore").innerText = `Ваш счет: ${score}`;
+  storage.setItem("Ваш счет: ", `${score}`);
+  storage.setItem("Лучший счет: ", `${bestScore()}`);
+  console.log(storage);
   cancelAnimationFrame(animationId);
 }
 
 function restartGame() {
   resetGame();
   document.getElementById("startScreen").classList.remove("hidden");
+  bestScore();
 }
 
 function resetGame() {
@@ -577,7 +602,10 @@ function gameLoop(timestamp) {
 function startGame() {
   document.getElementById("startScreen").classList.add("hidden");
   spawnIntervalId = setInterval(spawnEnemy, spawnInterval);
-
+  storage.setItem("Предыдущий счет: ", `${storage.getItem("Ваш счет: ")}`);
+  storage.setItem("Лучший счет: ", `${storage.getItem("Лучший счет: ")}`);
+  storage.setItem("Ваш счет: ", "0");
+  console.log(storage);
   // Запускаем независимый спавн бонусов "автострельба" и "удвоение"
   startBonusSpawns();
 
@@ -586,32 +614,49 @@ function startGame() {
 
 canvas.addEventListener("touchstart", (event) => {
   const touchX = event.touches[0].clientX;
+  const touchY = event.touches[0].clientY;
   player.x = touchX - player.width / 2;
+  player.y = touchY - player.height / 2;
 
   if (player.x < 0) player.x = 0;
   if (player.x + player.width > canvas.width)
     player.x = canvas.width - player.width;
+
+  if (player.y < 0) player.y = 0;
+  if (player.y + player.height > canvas.height)
+    player.y = canvas.height - player.height;
 });
 
 canvas.addEventListener("touchmove", (event) => {
   const touchX = event.touches[0].clientX;
+  const touchY = event.touches[0].clientY;
   player.x = touchX - player.width / 2;
+  player.y = touchY - player.height / 2;
 
   if (player.x < 0) player.x = 0;
   if (player.x + player.width > canvas.width)
     player.x = canvas.width - player.width;
+
+  if (player.y < 0) player.y = 0;
+  if (player.y + player.height > canvas.height)
+    player.y = canvas.height - player.height;
 });
 
 window.addEventListener("mousemove", (event) => {
   const canvasRect = canvas.getBoundingClientRect();
   const mouseX = event.clientX - canvasRect.left;
+  const mouseY = event.clientY - canvasRect.top;
   player.x = mouseX - player.width / 2;
+  player.y = mouseY - player.height / 2;
 
   if (player.x < 0) player.x = 0;
   if (player.x + player.width > canvas.width)
     player.x = canvas.width - player.width;
+
+  if (player.y < 0) player.y = 0;
+  if (player.y + player.height > canvas.height)
+    player.y = canvas.height - player.height;
 });
 
 document.getElementById("startButton").addEventListener("click", startGame);
 document.getElementById("restartButton").addEventListener("click", restartGame);
-
