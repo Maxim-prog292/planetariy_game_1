@@ -1,6 +1,11 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const storage = localStorage;
+storage.setItem("Предыдущий счет: ", 0);
+storage.setItem("Лучший счет: ", 0);
+
+storage.clear();
+
 const bestScore = () => {
   let best = 0;
   if (
@@ -67,14 +72,14 @@ const planets = [
   {
     name: "Neptune",
     image: "image/planet/neptune.png",
-    scoreToAppear: 1000,
+    scoreToAppear: 10000,
   },
-  { name: "Uranus", image: "image/planet/uranus.png", scoreToAppear: 7000 },
-  { name: "Saturn", image: "image/planet/saturn.png", scoreToAppear: 12000 },
-  { name: "Jupiter", image: "image/planet/jupiter.png", scoreToAppear: 16000 },
-  { name: "Mars", image: "image/planet/mars.png", scoreToAppear: 19000 },
-  { name: "Earth", image: "image/planet/earth.png", scoreToAppear: 23000 },
-  { name: "Venus", image: "image/planet/venus.png", scoreToAppear: 28000 },
+  { name: "Uranus", image: "image/planet/uranus.png", scoreToAppear: 15000 },
+  { name: "Saturn", image: "image/planet/saturn.png", scoreToAppear: 20000 },
+  { name: "Jupiter", image: "image/planet/jupiter.png", scoreToAppear: 27000 },
+  { name: "Mars", image: "image/planet/mars.png", scoreToAppear: 34000 },
+  { name: "Earth", image: "image/planet/earth.png", scoreToAppear: 40000 },
+  { name: "Venus", image: "image/planet/venus.png", scoreToAppear: 45000 },
 ];
 
 let currentPlanetIndex = 0; // Индекс текущей планеты
@@ -602,8 +607,8 @@ function gameLoop(timestamp) {
 function startGame() {
   document.getElementById("startScreen").classList.add("hidden");
   spawnIntervalId = setInterval(spawnEnemy, spawnInterval);
-  storage.setItem("Предыдущий счет: ", `${storage.getItem("Ваш счет: ")}`);
-  storage.setItem("Лучший счет: ", `${storage.getItem("Лучший счет: ")}`);
+  storage.setItem("Предыдущий счет: ", `${storage.getItem("Ваш счет: ") || 0}`);
+  storage.setItem("Лучший счет: ", `${storage.getItem("Лучший счет: ") || 0}`);
   storage.setItem("Ваш счет: ", "0");
   console.log(storage);
   // Запускаем независимый спавн бонусов "автострельба" и "удвоение"
