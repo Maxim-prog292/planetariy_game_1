@@ -1,25 +1,66 @@
+const returnButton = document.querySelectorAll(".returnButton");
+returnButton.forEach((element) =>
+  element.addEventListener("click", () => {
+    window.location.href = "https://maxim-prog292.github.io/Game-selection/";
+  })
+);
+setCookie("Предыдущий счет=0");
+setCookie("Лучший счет=0");
+setCookie("Ваш счет=0");
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const storage = localStorage;
-storage.setItem("Предыдущий счет: ", 0);
-storage.setItem("Лучший счет: ", 0);
 
-storage.clear();
+function getCookie(name) {
+  let matches = document.cookie.match(
+    new RegExp(
+      "(?:^|; )" +
+        name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
+        "=([^;]*)"
+    )
+  );
+  return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+function setCookie(name, value, options = {}) {
+  options = {
+    path: "/",
+    ...options,
+  };
+
+  if (options.expires instanceof Date) {
+    options.expires = options.expires.toUTCString();
+  }
+
+  let updatedCookie =
+    encodeURIComponent(name) + "=" + encodeURIComponent(value);
+
+  for (let optionKey in options) {
+    updatedCookie += "; " + optionKey;
+    let optionValue = options[optionKey];
+    if (optionValue !== true) {
+      updatedCookie += "=" + optionValue;
+    }
+  }
+
+  document.cookie = updatedCookie;
+}
+
+// storage.setItem("Предыдущий счет: ", 0);
+// storage.setItem("Лучший счет: ", 0);
+
+// storage.clear();
 
 const bestScore = () => {
   let best = 0;
-  if (
-    Number(storage.getItem("Ваш счет: ")) >
-    Number(storage.getItem("Лучший счет: "))
-  ) {
-    best = Number(storage.getItem("Ваш счет: "));
+  if (Number(getCookie("Ваш счет")) > Number(getCookie("Лучший счет"))) {
+    best = Number(getCookie("Ваш счет"));
   } else {
-    best = Number(storage.getItem("Лучший счет: "));
+    best = Number(getCookie("Лучший счет"));
   }
   return best;
 };
-
-console.log(Number(storage.getItem("Ваш счет: ")));
+console.log(Number(getCookie("Ваш счет")));
 
 document.addEventListener(
   "touchstart",
@@ -506,12 +547,8 @@ function drawScore() {
   ctx.fillStyle = "#fff";
   ctx.font = "36px Pixel";
   ctx.fillText(`Счет: ${score}`, 20, 40);
-  ctx.fillText(
-    `Предыдущий счет: ${storage.getItem("Предыдущий счет: ")}`,
-    20,
-    90
-  );
-  ctx.fillText(`Лучший счет: ${storage.getItem("Лучший счет: ")}`, 20, 140);
+  ctx.fillText(`Предыдущий счет: ${getCookie("Предыдущий счет")}`, 20, 90);
+  ctx.fillText(`Лучший счет: ${getCookie("Лучший счет")}`, 20, 140);
 }
 
 function increaseDifficulty() {
@@ -530,8 +567,13 @@ function triggerGameOver() {
   stopAutoFire();
   document.getElementById("gameOverScreen").classList.remove("hidden");
   document.getElementById("finalScore").innerText = `Ваш счет: ${score}`;
-  storage.setItem("Ваш счет: ", `${score}`);
-  storage.setItem("Лучший счет: ", `${bestScore()}`);
+  // document.cookie = `Ваш счет=${score}`;
+  setCookie("Ваш счет", score);
+  // storage.setItem("Ваш счет: ", `${score}`);
+  // document.cookie = `Лучший счет=${bestScore()}`;
+  setCookie("Лучший счет", bestScore());
+
+  // storage.setItem("Лучший счет: ", `${bestScore()}`);
   console.log(storage);
   cancelAnimationFrame(animationId);
 }
@@ -607,10 +649,15 @@ function gameLoop(timestamp) {
 function startGame() {
   document.getElementById("startScreen").classList.add("hidden");
   spawnIntervalId = setInterval(spawnEnemy, spawnInterval);
-  storage.setItem("Предыдущий счет: ", `${storage.getItem("Ваш счет: ") || 0}`);
-  storage.setItem("Лучший счет: ", `${storage.getItem("Лучший счет: ") || 0}`);
-  storage.setItem("Ваш счет: ", "0");
-  console.log(storage);
+  setCookie("Предыдущий счет", getCookie("Ваш счет") || 0);
+  // storage.setItem("Предыдущий счет: ", `${storage.getItem("Ваш счет: ") || 0}`);
+  setCookie("Лучший счет", getCookie("Лучший счет") || 0);
+  // document.cookie = `Лучший счет=${getCookie("Лучший счет") || 0}`;
+  // storage.setItem("Лучший счет: ", `${storage.getItem("Лучший счет: ") || 0}`);
+  setCookie("Ваш счет", 0);
+  // document.cookie = "Ваш счет=0";
+  // storage.setItem("Ваш счет: ", "0");
+  // console.log(storage);
   // Запускаем независимый спавн бонусов "автострельба" и "удвоение"
   startBonusSpawns();
 
